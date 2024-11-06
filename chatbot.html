@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydroponics Chatbot - E-Soil</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #111111; /* Dark background */
+            color: #f0f0f0; /* Light gray text */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Chatbot Container */
+        .chat-container {
+            width: 350px;
+            height: 500px;
+            background-color: #222222;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* Neon green glow */
+            border: 1px solid #00ff00;
+        }
+
+        /* Chat Messages Area */
+        .chat-box {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            border-bottom: 2px solid #00ff00;
+            font-size: 14px;
+            color: #f0f0f0;
+            background-color: #1b1b1b;
+            white-space: pre-wrap;
+        }
+
+        /* User Input Area */
+        .user-input {
+            display: flex;
+            padding: 10px;
+            background-color: #333333;
+        }
+
+        .user-input input {
+            flex-grow: 1;
+            padding: 10px;
+            background-color: #444444;
+            border: none;
+            color: #00ff00;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-input input:focus {
+            background-color: #00ff00;
+            color: #111111;
+        }
+
+        .user-input button {
+            padding: 10px;
+            background-color: #00ff00;
+            color: #111111;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-input button:hover {
+            background-color: #93c5fd; /* Light blue hover */
+        }
+
+        /* Animations for chat responses */
+        .chat-box .message {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 5px;
+        }
+
+        /* Footer / Credit */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            color: #00ff00;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .chat-container {
+                width: 300px;
+            }
+        }
+
+        /* Navigation Button Style */
+.nav-button {
+    background-color: #00ff00;  /* Neon green background */
+    color: #111111;             /* Dark text for contrast */
+    font-size: 16px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7); /* Neon glow */
+    margin-top: 20px;
+}
+
+.nav-button:hover {
+    background-color: #33cc33;  /* Lighter green when hovered */
+    box-shadow: 0 0 20px rgba(0, 255, 0, 1); /* Stronger neon glow */
+}
+
+.nav-button:active {
+    background-color: #009900;  /* Darker green when clicked */
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.9);
+}
+
+    </style>
+</head>
+<body>
+    <!-- Chatbot Container -->
+    <div class="chat-container">
+        <!-- Chat Box -->
+        <div class="chat-box" id="chatBox">
+            <div class="message">Welcome to the Hydroponics Chatbot! Ask me about e-Soil and Hydroponics.</div>
+        </div>
+
+        <!-- User Input -->
+        <div class="user-input">
+            <input type="text" id="userInput" placeholder="Ask a question..." autocomplete="off">
+            <button onclick="processInput()">Send</button>
+        </div>
+    </div>
+    <button class="nav-button" onclick="navigateToPage()"><a href="index.html">🏠</a></button>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; Created by Parv Sharma - Hydroponics Chatbot</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // List of predefined answers based on the provided information
+        const answers = {
+            "What is e-soil?": "E-soil is a conductive cultivation substrate for hydroponic systems, using low-powered electric currents to stimulate plant root growth. It consists of cellulose and a conductive polymer called PEDOT.",
+            "How does e-soil help plants grow faster?": "E-soil improves plant growth by stimulating the root system with low-voltage electrical currents, leading to enhanced nutrient uptake and faster growth.",
+            "What is hydroponics?": "Hydroponics is a method of growing plants without soil, using a nutrient-rich water solution and inert mediums like perlite or rockwool.",
+            "How does hydroponics work?": "In hydroponics, plants are grown in water with dissolved nutrients instead of soil. Their roots are exposed to the nutrient solution, ensuring they receive oxygen and essential minerals.",
+            "What are the benefits of hydroponics?": "Hydroponics allows for higher yields, better use of land and water, and the ability to grow in controlled, urban environments with limited arable land.",
+            "What is electro-culture farming?": "Electro-culture farming is a technique that uses electricity to stimulate plant growth, typically with low-voltage systems that increase yield and improve nutrient absorption.",
+            "Who invented electro-culture farming?": "Electro-culture farming was explored by scientists like Pierre Bertholon de Saint-Lazare in the 18th century, and it has evolved to focus on low-voltage electrical stimulation of plants.",
+            "How does electro-culture farming work?": "Electro-culture farming uses electrical currents to mimic the effects of lightning or stimulate plants, boosting their growth and enhancing their nutrient absorption.",
+            "What are the benefits of electro-culture farming?": "The main benefits of electro-culture farming include increased crop yields, faster growth rates, and reduced dependency on chemical fertilizers.",
+            "What is the history of electro-culture farming?": "Electro-culture farming dates back to the 18th century when scientists like Pierre Bertholon experimented with atmospheric electricity. It has evolved to use low-voltage electricity to stimulate plant growth.",
+            "What is the difference between high-voltage and low-voltage electro-culture farming?": "High-voltage electro-culture was used historically to mimic lightning effects, while low-voltage electro-culture, which is currently in use, offers a safer, more sustainable way to stimulate plant growth.",
+            "What materials are used in hydroponic systems?": "Common materials used in hydroponics include inert mediums like perlite, rockwool, clay pellets, peat moss, and vermiculite to support plant roots in the absence of soil.",
+            "Why is e-soil better than mineral wool in hydroponics?": "E-soil is more environmentally friendly, biodegradable, and requires less energy to produce compared to mineral wool, making it a more sustainable option for hydroponics.",
+            "What is the role of electricity in hydroponic farming?": "Electricity in hydroponic farming, especially through e-soil, stimulates the plant roots, enhancing nutrient uptake, growth rates, and overall plant health.",
+            "How does e-soil improve nutrient uptake?": "E-soil facilitates better nutrient absorption by creating an optimal environment for root growth, allowing plants to process minerals like nitrogen more effectively.",
+            "Can e-soil reduce the need for chemical fertilizers?": "Yes, e-soil reduces the need for chemical fertilizers by improving the efficiency of nutrient uptake, allowing plants to thrive without excess chemicals.",
+            "What is the research behind e-soil development?": "Research at Linkoping University in Sweden, led by Eleni Stavrinidou, focused on using a blend of cellulose and conductive polymers to create e-soil, demonstrating its effectiveness in boosting plant growth.",
+            "How do low-voltage electric currents benefit plants?": "Low-voltage electric currents stimulate the roots of plants, encouraging faster growth, higher yields, and better nutrient absorption without harming the plants.",
+            "Why is cellulose used in e-soil?": "Cellulose is a natural, biodegradable biopolymer that provides the base for e-soil, making it eco-friendly and sustainable for long-term use in hydroponic systems.",
+            "How does e-soil compare to traditional soil-based farming?": "E-soil is more efficient than traditional soil farming because it requires less water, eliminates the need for chemical fertilizers, and can increase crop yields in controlled environments.",
+            "How can hydroponics help solve global food shortages?": "Hydroponics can help address food shortages by allowing crops to be grown in urban areas, using less land and water, and providing a more sustainable solution to traditional farming methods.",
+            "What are the challenges of hydroponic farming?": "Challenges of hydroponic farming include the need for constant monitoring of water levels and pH, energy consumption for lighting and pumps, and the potential for disease spread in water systems.",
+            "Is e-soil biodegradable?": "Yes, e-soil is made of cellulose and is fully biodegradable, breaking down naturally over time without harming the environment.",
+            "How much growth boost can e-soil provide to crops?": "Studies have shown that e-soil can boost crop growth by up to 50%, as seen in tests with barley seedlings in hydroponic systems.",
+            "What are the applications of hydroponics in urban farming?": "Hydroponics is increasingly being used in urban farming to grow food in cities, where arable land is scarce and water resources are limited.",
+            "How does e-soil help plants process nitrogen?": "E-soil enhances nitrogen processing by improving the root system's efficiency in absorbing and utilizing nitrogen from the surrounding nutrient solution.",
+            "What is the significance of using a conductive polymer like PEDOT in e-soil?": "PEDOT helps create an electrically conductive environment within the e-soil, which is crucial for enhancing the plant roots' response to electrical stimulation.",
+            "What are the key advantages of hydroponic farming over traditional farming?": "Hydroponics offers higher yields, better resource efficiency, faster growth, and the ability to grow in controlled environments, making it ideal for urban and resource-constrained areas.",
+            "How can hydroponic farming help with climate change?": "Hydroponic farming can mitigate climate change by reducing the need for chemical fertilizers, conserving water, and enabling efficient, low-emission crop production in urban settings.",
+            "What are the potential future applications of e-soil and hydroponics?": "E-soil and hydroponics hold great potential for large-scale urban farming, vertical farms, and sustainable agriculture, helping to meet the growing food demands of the global population."
+
+        };
+
+        // Function to process user input and respond
+        function processInput() {
+            const userInput = document.getElementById("userInput").value.trim().toLowerCase();
+            const chatBox = document.getElementById("chatBox");
+            
+            if (userInput) {
+                // Display user message
+                const userMessage = document.createElement("div");
+                userMessage.classList.add("message");
+                userMessage.innerText = `You: ${document.getElementById("userInput").value}`;
+                chatBox.appendChild(userMessage);
+                document.getElementById("userInput").value = "";  // Clear input field
+
+                // Find response based on user input
+                let botResponse = "Sorry, I don't understand that question.";
+                for (const question in answers) {
+                    if (userInput.includes(question.toLowerCase())) {
+                        botResponse = answers[question];
+                        break;
+                    }
+                }
+
+                // Display bot message with a slight delay
+                setTimeout(function() {
+                    const botMessage = document.createElement("div");
+                    botMessage.classList.add("message");
+                    botMessage.innerText = `Bot: ${botResponse}`;
+                    chatBox.appendChild(botMessage);
+                    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+                }, 1000);
+            }
+        }
+
+        // Allow pressing "Enter" to submit input
+        document.getElementById("userInput").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                processInput();
+            }
+        });
+    </script>
+</body>
+</html>
